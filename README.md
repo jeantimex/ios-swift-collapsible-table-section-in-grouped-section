@@ -188,3 +188,11 @@ We only want to refresh related cells of certain section, so we choose `reloadRo
 Invalid update: invalid number of rows in section 1.  The number of rows contained in an existing section after the update (11) must be equal to the number of rows contained in that section before the update (3), plus or minus the number of rows inserted or deleted from that section (0 inserted, 0 deleted) and plus or minus the number of rows moved into or out of that section (0 moved in, 0 moved out).
 
 That's it, please refer to the source code and see the detailed implementation.
+
+### More Collapsible Demo ###
+
+Sometimes you might want to implement the collapsible cells in a normal table, I have a separate demo at [https://github.com/jeantimex/ios-swift-collapsible-table-section](https://github.com/jeantimex/ios-swift-collapsible-table-section). The implementation is pretty much the same but slight different.
+
+![demo](http://jinandsu.net/ios-swift-collapsible-table-section/demo.gif)<br />
+
+Author: Yong Su @ Box Inc.
