@@ -1,5 +1,5 @@
 # Collapsible Table Section in Grouped Table
-A simple iOS swift project demonstrates how to implement collapsible table section.
+A simple iOS swift project demonstrates how to implement collapsible section in grouped table.
 
 ### Demo ###
 ![demo](screenshots/demo.gif)<br />
