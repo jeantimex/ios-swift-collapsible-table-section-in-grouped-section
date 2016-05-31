@@ -36,7 +36,7 @@
                                                 <constraint firstAttribute="height" constant="30" id="WmC-b4-dCv"/>
                                                 <constraint firstAttribute="width" constant="30" id="f8F-zT-iKc"/>
                                             </constraints>
-                                            <state key="normal" title="&gt;">
+                                            <state key="normal" title="+">
                                                 <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                             </state>
                                         </button>
