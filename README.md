@@ -191,7 +191,7 @@ That's it, please refer to the source code and see the detailed implementation.
 
 ### More Collapsible Demo ###
 
-Sometimes you might want to implement the collapsible cells in a normal table, I have a separate demo at [https://github.com/jeantimex/ios-swift-collapsible-table-section](https://github.com/jeantimex/ios-swift-collapsible-table-section). The implementation is pretty much the same but slight different.
+Sometimes you might want to implement the collapsible cells in a normal table, I have a separate demo at [https://github.com/jeantimex/ios-swift-collapsible-table-section](https://github.com/jeantimex/ios-swift-collapsible-table-section). The implementation is pretty much the same but slightly different.
 
 ![demo](http://jinandsu.net/ios-swift-collapsible-table-section/demo.gif)<br />
 
