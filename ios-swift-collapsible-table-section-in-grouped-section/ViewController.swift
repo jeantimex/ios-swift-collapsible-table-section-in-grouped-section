@@ -19,10 +19,10 @@ class ViewController: UITableViewController {
         var items: [String]!
         var collapsed: Bool!
         
-        init(name: String, items: [String]) {
+        init(name: String, items: [String], collapsed: Bool = false) {
             self.name = name
             self.items = items
-            self.collapsed = true
+            self.collapsed = collapsed
         }
     }
     
