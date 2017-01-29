@@ -44,11 +44,11 @@ class ViewController: UITableViewController {
     // MARK: - Table view delegate
     //
     
-    override func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    override func numberOfSections(in tableView: UITableView) -> Int {
         return 2
     }
     
-    override func tableView(tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
             case 0:  return "Manufacture"
             case 1:  return "Products"
@@ -56,7 +56,7 @@ class ViewController: UITableViewController {
         }
     }
 
-    override func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 0 {
             return 1
         }
@@ -71,7 +71,7 @@ class ViewController: UITableViewController {
         return count
     }
     
-    override func tableView(tableView: UITableView, heightForRowAtIndexPath indexPath: NSIndexPath) -> CGFloat {
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.section == 0 {
             return tableView.rowHeight
         }
@@ -88,11 +88,11 @@ class ViewController: UITableViewController {
         return sections[section].collapsed! ? 0 : 44.0
     }
     
-    override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
-            let cell = tableView.dequeueReusableCellWithIdentifier("title") as UITableViewCell!
-            cell.textLabel?.text = "Apple"
-            return cell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "title") as UITableViewCell!
+            cell?.textLabel?.text = "Apple"
+            return cell!
         }
         
         // Calculate the real section index and row index
@@ -100,28 +100,28 @@ class ViewController: UITableViewController {
         let row = getRowIndex(indexPath.row)
         
         if row == 0 {
-            let cell = tableView.dequeueReusableCellWithIdentifier("header") as! HeaderCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "header") as! HeaderCell
             cell.titleLabel.text = sections[section].name
             cell.toggleButton.tag = section
-            cell.toggleButton.setTitle(sections[section].collapsed! ? "+" : "-", forState: .Normal)
-            cell.toggleButton.addTarget(self, action: #selector(ViewController.toggleCollapse), forControlEvents: .TouchUpInside)
+            cell.toggleButton.setTitle(sections[section].collapsed! ? "+" : "-", for: UIControlState())
+            cell.toggleButton.addTarget(self, action: #selector(ViewController.toggleCollapse), for: .touchUpInside)
             return cell
         } else {
-            let cell = tableView.dequeueReusableCellWithIdentifier("cell") as UITableViewCell!
-            cell.textLabel?.text = sections[section].items[row - 1]
-            return cell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as UITableViewCell!
+            cell?.textLabel?.text = sections[section].items[row - 1]
+            return cell!
         }
     }
     
     //
     // MARK: - Event Handlers
     //
-    func toggleCollapse(sender: UIButton) {
+    func toggleCollapse(_ sender: UIButton) {
         let section = sender.tag
         let collapsed = sections[section].collapsed
         
         // Toggle collapse
-        sections[section].collapsed = !collapsed
+        sections[section].collapsed = !collapsed!
         
         let indices = getHeaderIndices()
         
@@ -130,7 +130,7 @@ class ViewController: UITableViewController {
         
         tableView.beginUpdates()
         for i in start ..< end + 1 {
-            tableView.reloadRowsAtIndexPaths([NSIndexPath(forRow: i, inSection: 1)], withRowAnimation: .Automatic)
+            tableView.reloadRows(at: [IndexPath(row: i, section: 1)], with: .automatic)
         }
         tableView.endUpdates()
     }
@@ -138,7 +138,7 @@ class ViewController: UITableViewController {
     //
     // MARK: - Helper Functions
     //
-    func getSectionIndex(row: NSInteger) -> Int {
+    func getSectionIndex(_ row: NSInteger) -> Int {
         let indices = getHeaderIndices()
         
         for i in 0..<indices.count {
@@ -150,7 +150,7 @@ class ViewController: UITableViewController {
         return -1
     }
     
-    func getRowIndex(row: NSInteger) -> Int {
+    func getRowIndex(_ row: NSInteger) -> Int {
         var index = row
         let indices = getHeaderIndices()
         
