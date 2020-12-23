@@ -12,5 +12,6 @@ class HeaderCell: UITableViewCell {
 
     @IBOutlet var titleLabel: UILabel!
     @IBOutlet var toggleButton: UIButton!
+    @IBOutlet var countLabel: UILabel!
 
 }
