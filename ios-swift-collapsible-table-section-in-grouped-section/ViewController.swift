@@ -13,20 +13,14 @@ class ViewController: UITableViewController {
     //
     // MARK: - Data
     //
-    
-    struct Section {
-        var name: String!
-        var items: [String]!
-        var collapsed: Bool!
-        
-        init(name: String, items: [String], collapsed: Bool = false) {
-            self.name = name
-            self.items = items
-            self.collapsed = collapsed
-        }
-    }
-    
+
     var sections = [Section]()
+    
+    //Items to keep at the top of each section
+    //if a section items count less than this value the section does not collapse
+    let itemsToKeepAtTheTop     : Int     = 3
+    let sectionHeaderCellHeight : CGFloat = 50.0
+    let cellHeight              : CGFloat = 44.0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -34,9 +28,24 @@ class ViewController: UITableViewController {
         // Initialize the sections array
         // Here we have three sections: Mac, iPad, iPhone
         sections = [
-            Section(name: "Mac", items: ["MacBook", "MacBook Air", "MacBook Pro", "iMac", "Mac Pro", "Mac mini", "Accessories", "OS X El Capitan"]),
-            Section(name: "iPad", items: ["iPad Pro", "iPad Air 2", "iPad mini 4", "Accessories"]),
-            Section(name: "iPhone", items: ["iPhone 6s", "iPhone 6", "iPhone SE", "Accessories"])
+            Section(name: "Mac",
+                    items: ["MacBook",
+                            "MacBook Air",
+                            "MacBook Pro", "iMac",
+                            "Mac Pro", "Mac mini",
+                            "Accessories",
+                            "OS X El Capitan"],
+                    collapsed:  true),
+            Section(name: "iPad", items: ["iPad Pro",
+                                          "iPad Air 2",
+                                          "iPad mini 4",
+                                          "Accessories"],
+                    collapsed: true),
+            Section(name: "iPhone", items: ["iPhone 6s",
+                                            "iPhone 6",
+                                            "iPhone SE",
+                                            "Accessories"],
+                    collapsed: true)
         ]
     }
 
@@ -77,37 +86,53 @@ class ViewController: UITableViewController {
         }
         
         // Calculate the real section index and row index
-        let section = getSectionIndex(indexPath.row)
-        let row = getRowIndex(indexPath.row)
+        let section = sections.getSectionIndex(indexPath.row)
+        let row = sections.getRowIndex(indexPath.row)
         
         // Header has fixed height
-        if row == 0 {
-            return 50.0
+        if row == 0 { return sectionHeaderCellHeight }
+                
+        if sections[section].collapsed! {
+            var count = 0
+            var itemsToHide = 0
+            var needsToHideEntireSection = false
+            for index in 0...section {
+                count += sections[index].items.count
+                needsToHideEntireSection = itemsToKeepAtTheTop >= sections[index].items.count
+                itemsToHide = sections[index].items.count - (sections[index].items.count + (sections[index].items.count - itemsToKeepAtTheTop) - 1)
+            }
+            if needsToHideEntireSection {
+                return cellHeight
+            } else {
+                return indexPath.row < count + section + itemsToHide ? cellHeight : 0
+            }
+        } else {
+            return cellHeight
         }
-        
-        return sections[section].collapsed! ? 0 : 44.0
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.section == 0 {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "title") as UITableViewCell!
+            let cell = tableView.dequeueReusableCell(withIdentifier: "title")
             cell?.textLabel?.text = "Apple"
             return cell!
         }
         
         // Calculate the real section index and row index
-        let section = getSectionIndex(indexPath.row)
-        let row = getRowIndex(indexPath.row)
+        let section = sections.getSectionIndex(indexPath.row)
+        let row = sections.getRowIndex(indexPath.row)
         
         if row == 0 {
             let cell = tableView.dequeueReusableCell(withIdentifier: "header") as! HeaderCell
             cell.titleLabel.text = sections[section].name
             cell.toggleButton.tag = section
-            cell.toggleButton.setTitle(sections[section].collapsed! ? "+" : "-", for: UIControlState())
+            cell.toggleButton.setTitle(sections[section].collapsed! ? "+" : "-", for: UIControl.State())
             cell.toggleButton.addTarget(self, action: #selector(ViewController.toggleCollapse), for: .touchUpInside)
+            cell.countLabel.text = "\(sections[section].items.count - itemsToKeepAtTheTop)+"
+            cell.countLabel.isHidden = !sections[section].collapsed
             return cell
         } else {
-            let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as UITableViewCell!
+            let cell = tableView.dequeueReusableCell(withIdentifier: "cell")
             cell?.textLabel?.text = sections[section].items[row - 1]
             return cell!
         }
@@ -116,14 +141,14 @@ class ViewController: UITableViewController {
     //
     // MARK: - Event Handlers
     //
-    func toggleCollapse(_ sender: UIButton) {
+    @objc func toggleCollapse(_ sender: UIButton) {
         let section = sender.tag
         let collapsed = sections[section].collapsed
         
         // Toggle collapse
         sections[section].collapsed = !collapsed!
         
-        let indices = getHeaderIndices()
+        let indices = sections.getHeaderIndices()
         
         let start = indices[section]
         let end = start + sections[section].items.count
@@ -134,46 +159,50 @@ class ViewController: UITableViewController {
         }
         tableView.endUpdates()
     }
-    
-    //
-    // MARK: - Helper Functions
-    //
-    func getSectionIndex(_ row: NSInteger) -> Int {
-        let indices = getHeaderIndices()
-        
-        for i in 0..<indices.count {
-            if i == indices.count - 1 || row < indices[i + 1] {
-                return i
-            }
-        }
-        
-        return -1
+}
+
+struct Section {
+    var name: String!
+    var items: [String]!
+    var collapsed: Bool!
+    init(name: String, items: [String], collapsed: Bool = true) {
+        self.name = name
+        self.items = items
+        self.collapsed = collapsed
     }
-    
+}
+
+extension Array where Element == Section {
     func getRowIndex(_ row: NSInteger) -> Int {
         var index = row
         let indices = getHeaderIndices()
-        
         for i in 0..<indices.count {
             if i == indices.count - 1 || row < indices[i + 1] {
                 index -= indices[i]
                 break
             }
         }
-        
         return index
+    }
+    
+    func getSectionIndex(_ row: NSInteger) -> Int {
+        let indices = self.getHeaderIndices()
+        for i in 0..<indices.count {
+            if i == indices.count - 1 || row < indices[i + 1] {
+                return i
+            }
+        }
+        return -1
     }
     
     func getHeaderIndices() -> [Int] {
         var index = 0
         var indices: [Int] = []
-        
-        for section in sections {
+        for section in self {
             indices.append(index)
             index += section.items.count + 1
         }
         
         return indices
     }
-
 }
